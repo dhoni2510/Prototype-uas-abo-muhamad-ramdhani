@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perjanjian Pasien Poliklinik RSU Delima</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sistem Perjanjian Pasien Poliklinik RSU Delima</h1>
+
+        <!-- Login Section -->
+        <div id="login-section">
+            <h2>Masuk</h2>
+            <div class="message hidden" id="login-message"></div>
+            <div class="form-group">
+                <label for="username">Nama Pengguna:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Kata Sandi:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <button onclick="handleLogin()">Masuk</button>
+            </div>
+            <hr>
+            <p style="text-align: center;">Pasien Baru? <button onclick="showRegister()">Daftar Akun</button></p>
+        </div>
+
+        <!-- Register Section (for Patient) -->
+        <div id="register-section" class="hidden">
+            <h2>Daftar Akun Baru</h2>
+            <div class="message hidden" id="register-message"></div>
+            <div class="form-group">
+                <label for="reg-name">Nama Lengkap:</label>
+                <input type="text" id="reg-name" name="reg-name" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Email:</label>
+                <input type="text" id="reg-email" name="reg-email" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-username">Nama Pengguna:</label>
+                <input type="text" id="reg-username" name="reg-username" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Kata Sandi:</label>
+                <input type="password" id="reg-password" name="reg-password" required>
+            </div>
+            <div class="form-group">
+                <button onclick="handleRegister()">Daftar</button>
+                <button class="back-button" onclick="showLogin()">Kembali ke Masuk</button>
+            </div>
+        </div>
+
+        <!-- Patient Dashboard -->
+        <div id="patient-dashboard" class="hidden">
+            <h2>Selamat Datang, Pasien!</h2>
+            <div class="nav-menu">
+                <button onclick="showMakeAppointment()">Buat Perjanjian</button>
+                <button onclick="showPatientScheduleAndQueue()">Lihat Perjanjian & Antrian Saya</button>
+                <button onclick="showDoctorSchedulePerPolyclinic()">Lihat Jadwal Dokter per Poliklinik</button>
+                <button onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        <!-- Patient - Make Appointment -->
+        <div id="make-appointment-section" class="hidden">
+            <h2>Buat Perjanjian Baru</h2>
+            <div class="message hidden" id="appointment-message"></div>
+            <div class="form-group">
+                <label for="poli-select">Pilih Poliklinik:</label>
+                <select id="poli-select" onchange="loadDoctors()">
+                    <option value="">-- Pilih Poliklinik --</option>
+                    <option value="umum">Poli Umum</option>
+                    <option value="gigi">Poli Gigi</option>
+                    <option value="penyakit_dalam">Poli Penyakit Dalam</option>
+                    <option value="kebidanan">Poli Kebidanan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="doctor-select">Pilih Dokter:</label>
+                <select id="doctor-select">
+                    <option value="">-- Pilih Dokter --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="appointment-date">Tanggal:</label>
+                <input type="date" id="appointment-date">
+            </div>
+            <div class="form-group">
+                <label for="appointment-time">Waktu:</label>
+                <input type="time" id="appointment-time">
+            </div>
+            <div class="form-group">
+                <button onclick="submitAppointment()">Konfirmasi Perjanjian</button>
+                <button class="back-button" onclick="showPatientDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Patient - View Schedule & Queue -->
+        <div id="patient-schedule-queue-section" class="hidden">
+            <h2>Perjanjian & Antrian Saya</h2>
+            <p>Di sini Anda dapat melihat perjanjian terjadwal dan status antrian perkiraan Anda.</p>
+            <h3>Perjanjian Terjadwal:</h3>
+            <ul id="patient-appointments-list">
+                <li><strong>2025-07-10, 09:10 AM:</strong> Dr. Budi (Poli Umum) - Status: Dikonfirmasi</li>
+                <li><strong>2025-07-10, 08:00 AM:</strong> Dr. Siti (Poli Umum) - Status: Dikonfirmasi</li>
+            </ul>
+            <h3>Status Antrian Saat Ini (Simulasi):</h3>
+            <p>Nomor antrian perkiraan Anda untuk perjanjian hari ini (jika ada): <strong>Tidak Berlaku</strong> (Tidak ada perjanjian hari ini atau tanggal kunjungan di masa depan)</p>
+            <p>Untuk Dr. Budi (Poli Umum) pada 2025-07-10, perkiraan waktu tunggu: <strong>30-45 menit</strong>, nomor Anda akan diberikan saat kedatangan.</p>
+            <div class="form-group">
+                <button class="back-button" onclick="showPatientDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Patient - View Doctor Schedules per Polyclinic -->
+        <div id="doctor-schedule-per-polyclinic-section" class="hidden">
+            <h2>Jadwal Dokter per Poliklinik</h2>
+            <div class="form-group">
+                <label for="poli-schedule-select">Pilih Poliklinik:</label>
+                <select id="poli-schedule-select" onchange="displayDoctorSchedules()">
+                    <option value="">-- Pilih Poliklinik --</option>
+                    <option value="umum">Poli Umum</option>
+                    <option value="gigi">Poli Gigi</option>
+                    <option value="penyakit_dalam">Poli Penyakit Dalam</option>
+                    <option value="kebidanan">Poli Kebidanan</option>
+                </select>
+            </div>
+            <div id="doctor-schedules-display">
+                <p>Pilih poliklinik untuk melihat jadwal dokter.</p>
+            </div>
+            <div class="form-group">
+                <button class="back-button" onclick="showPatientDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Doctor Dashboard -->
+        <div id="doctor-dashboard" class="hidden">
+            <h2>Selamat Datang, Dokter!</h2>
+            <div class="nav-menu">
+                <button onclick="showDoctorWeeklySchedule()">Lihat Jadwal Praktik Mingguan Saya</button>
+                <button onclick="showDoctorPatientList()">Lihat Daftar Pasien per Jadwal</button>
+                <button onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        <!-- Doctor - View Weekly Practice Schedule -->
+        <div id="doctor-weekly-schedule-section" class="hidden">
+            <h2>Jadwal Praktik Mingguan Saya</h2>
+            <table id="weekly-schedule-table">
+                <thead>
+                    <tr>
+                        <th>Hari</th>
+                        <th>Waktu</th>
+                        <th>Poliklinik</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Senin</td><td>09:10 - 12:00</td><td>Poli Umum</td></tr>
+                    <tr><td>Rabu</td><td>14:00 - 17:00</td><td>Poli Penyakit Dalam</td></tr>
+                    <tr><td>Jumat</td><td>10:00 - 13:00</td><td>Poli Umum</td></tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <button class="back-button" onclick="showDoctorDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Doctor - View Patient List per Schedule -->
+        <div id="doctor-patient-list-section" class="hidden">
+            <h2>Daftar Pasien per Jadwal</h2>
+            <div class="form-group">
+                <label for="schedule-date-select">Pilih Tanggal:</label>
+                <input type="date" id="schedule-date-select" onchange="displayPatientList()">
+            </div>
+            <div id="patient-list-display">
+                <p>Pilih tanggal untuk melihat daftar pasien.</p>
+            </div>
+            <div class="form-group">
+                <button class="back-button" onclick="showDoctorDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="hidden">
+            <h2>Selamat Datang, Admin RS!</h2>
+            <div class="nav-menu">
+                <button onclick="showAdminManageDoctorData()">Kelola Data Dokter</button>
+                <button onclick="showAdminManagePolyclinicData()">Kelola Data Poliklinik</button>
+                <button onclick="showAdminManageDoctorScheduleQuota()">Kelola Jadwal & Kuota Dokter</button>
+                <button onclick="showAdminRekapLayanan()">Lihat Rekapitulasi Layanan Kunjungan</button>
+                <button onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        
+
+        <!-- Admin - Manage Doctor Data -->
+        <div id="admin-manage-doctor-data-section" class="hidden">
+            <h2>Kelola Data Dokter</h2>
+            <div class="message hidden" id="admin-doctor-message"></div>
+
+            <h3>Daftar Dokter</h3>
+            <table id="doctor-list-table">
+                <thead>
+                    <tr>
+                        <th>ID Dokter</th>
+                        <th>Nama Dokter</th>
+                        <th>Poliklinik</th>
+                        <th>Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Doctor data will be dynamically inserted here by JS -->
+                </tbody>
+            </table>
+
+            <h3>Tambah Dokter Baru</h3>
+            <div class="form-group">
+                <label for="new-doctor-id">ID Dokter:</label>
+                <input type="text" id="new-doctor-id" required>
+            </div>
+            <div class="form-group">
+                <label for="new-doctor-name">Nama Dokter:</label>
+                <input type="text" id="new-doctor-name" required>
+            </div>
+            <div class="form-group">
+                <label for="new-doctor-polyclinic">Poliklinik:</label>
+                <select id="new-doctor-polyclinic" required>
+                    <option value="">-- Pilih Poliklinik --</option>
+                    <option value="Poli Umum">Poli Umum</option>
+                    <option value="Poli Gigi">Poli Gigi</option>
+                    <option value="Poli Penyakit Dalam">Poli Penyakit Dalam</option>
+                    <option value="Poli Kebidanan">Poli Kebidanan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button onclick="addDoctor()">Tambah Dokter</button>
+            </div>
+
+            <!-- Edit Doctor Section - initially hidden -->
+            <h3 id="edit-doctor-title" class="hidden">Edit Dokter</h3>
+            <div id="edit-doctor-form" class="hidden">
+                <input type="hidden" id="edit-doctor-original-id">
+                <div class="form-group">
+                    <label for="edit-doctor-id">ID Dokter:</label>
+                    <input type="text" id="edit-doctor-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-doctor-name">Nama Dokter:</label>
+                    <input type="text" id="edit-doctor-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-doctor-polyclinic">Poliklinik:</label>
+                    <select id="edit-doctor-polyclinic" required>
+                        <option value="">-- Pilih Poliklinik --</option>
+                        <option value="Poli Umum">Poli Umum</option>
+                        <option value="Poli Gigi">Poli Gigi</option>
+                        <option value="Poli Penyakit Dalam">Poli Penyakit Dalam</option>
+                        <option value="Poli Kebidanan">Poli Kebidanan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button onclick="updateDoctor()">Simpan Perubahan</button>
+                    <button onclick="cancelEditDoctor()">Batal</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button class="back-button" onclick="showAdminDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Admin - Manage Polyclinic Data -->
+        <div id="admin-manage-polyclinic-data-section" class="hidden">
+    <h2>Kelola Data Poliklinik</h2>
+    <div class="message hidden" id="admin-polyclinic-message"></div>
+
+    <h3>Daftar Poliklinik</h3>
+    <table id="polyclinic-list-table">
+        <thead>
+            <tr>
+                <th>ID Poliklinik</th>
+                <th>Nama Poliklinik</th>
+                <th>Tindakan</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <h3>Tambah Poliklinik Baru</h3>
+    <div class="form-group">
+        <label for="new-polyclinic-id">ID Poliklinik:</label>
+        <input type="text" id="new-polyclinic-id" required>
+    </div>
+    <div class="form-group">
+        <label for="new-polyclinic-name">Nama Poliklinik:</label>
+        <input type="text" id="new-polyclinic-name" required>
+    </div>
+    <div class="form-group">
+        <button onclick="addPolyclinic()">Tambah Poliklinik</button>
+    </div>
+
+    <h3 id="edit-polyclinic-title" class="hidden">Edit Poliklinik</h3>
+    <div id="edit-polyclinic-form" class="hidden">
+        <input type="hidden" id="edit-polyclinic-original-id">
+        <div class="form-group">
+            <label for="edit-polyclinic-id">ID Poliklinik:</label>
+            <input type="text" id="edit-polyclinic-id" required>
+        </div>
+        <div class="form-group">
+            <label for="edit-polyclinic-name">Nama Poliklinik:</label>
+            <input type="text" id="edit-polyclinic-name" required>
+        </div>
+        <div class="form-group">
+            <button onclick="updatePolyclinic()">Simpan Perubahan</button>
+            <button onclick="cancelEditPolyclinic()">Batal</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button onclick="updateDoctor()">Simpan Perubahan</button>
+        <button class="back-button" onclick="showAdminDashboard()">Kembali ke Dashboard</button>
+    </div>
+</div>
+
+        <!-- Admin - Manage Doctor Schedule & Quota -->
+       <div id="admin-manage-schedule-quota-section" class="hidden">
+    <h2>Kelola Jadwal & Kuota Dokter</h2>
+    <div class="message hidden" id="admin-schedule-quota-message"></div>
+
+    <h3>Daftar Jadwal & Kuota Dokter</h3>
+    <table id="doctor-schedule-quota-table">
+        <thead>
+            <tr>
+                <th>Dokter</th>
+                <th>Poliklinik</th>
+                <th>Tanggal</th>
+                <th>Waktu</th>
+                <th>Kuota</th>
+                <th>Tindakan</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <h3>Tambah Jadwal Baru</h3>
+    <div class="form-group">
+        <label for="new-schedule-doctor">Dokter:</label>
+        <select id="new-schedule-doctor" required></select> </div>
+    <div class="form-group">
+        <label for="new-schedule-polyclinic">Poliklinik:</label>
+        <select id="new-schedule-polyclinic" required></select> </div>
+    <div class="form-group">
+        <label for="new-schedule-date">Tanggal:</label>
+        <input type="date" id="new-schedule-date" required>
+    </div>
+    <div class="form-group">
+        <label for="new-schedule-time">Waktu:</label>
+        <input type="time" id="new-schedule-time" required>
+    </div>
+    <div class="form-group">
+        <label for="new-schedule-quota">Kuota Maksimum:</label>
+        <input type="number" id="new-schedule-quota" min="1" value="10" required>
+    </div>
+    <div class="form-group">
+        <button onclick="addDoctorSchedule()">Tambah Jadwal</button>
+    </div>
+
+    <h3 id="edit-schedule-title" class="hidden">Edit Jadwal Dokter</h3>
+    <div id="edit-schedule-form" class="hidden">
+        <input type="hidden" id="edit-schedule-original-index"> <div class="form-group">
+            <label for="edit-schedule-doctor">Dokter:</label>
+            <select id="edit-schedule-doctor" required></select>
+        </div>
+        <div class="form-group">
+            <label for="edit-schedule-polyclinic">Poliklinik:</label>
+            <select id="edit-schedule-polyclinic" required></select>
+        </div>
+        <div class="form-group">
+            <label for="edit-schedule-date">Tanggal:</label>
+            <input type="date" id="edit-schedule-date" required>
+        </div>
+        <div class="form-group">
+            <label for="edit-schedule-time">Waktu:</label>
+            <input type="time" id="edit-schedule-time" required>
+        </div>
+        <div class="form-group">
+            <label for="edit-schedule-quota">Kuota Maksimum:</label>
+            <input type="number" id="edit-schedule-quota" min="1" required>
+        </div>
+        <div class="form-group">
+            <button onclick="updateDoctorSchedule()">Simpan Perubahan</button>
+            <button onclick="cancelEditDoctorSchedule()">Batal</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button class="back-button" onclick="showAdminDashboard()">Kembali ke Dashboard</button>
+    </div>
+</div>
+        <!-- Admin - View Service Visit Recap -->
+        <div id="admin-rekap-layanan-section" class="hidden">
+            <h2>Rekapitulasi Layanan Kunjungan</h2>
+            <p>Bagian ini akan menampilkan laporan dan statistik agregat tentang kunjungan pasien.</p>
+            <h3>Ringkasan Kunjungan Bulanan (Simulasi):</h3>
+            <ul>
+                <li>Juli 2025: 150 Kunjungan Pasien</li>
+                <li>Poli Umum: 70 kunjungan</li>
+                <li>Poli Gigi: 30 kunjungan</li>
+                <li>Poli Penyakit Dalam: 40 kunjungan</li>
+                <li>Poli Kebidanan: 10 kunjungan</li>
+            </ul>
+            <h3>Kinerja Dokter (Simulasi):</h3>
+            <ul>
+                <li>Dr. Budi: 60 perjanjian</li>
+                <li>Dr. Citra: 25 perjanjian</li>
+                <li>Dr. Anisa: 35 perjanjian</li>
+            </ul>
+            <div class="form-group">
+                <button class="back-button" onclick="showAdminDashboard()">Kembali ke Dashboard</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
