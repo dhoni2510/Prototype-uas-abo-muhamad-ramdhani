@@ -4,10 +4,10 @@
 // Data akan dimuat dari localStorage jika ada, jika tidak, data default akan digunakan.
 // Perubahan pada data melalui UI Admin akan disimpan kembali ke localStorage.
 let users = JSON.parse(localStorage.getItem('users')) || {
-    'admin': { password: '123', role: 'admin' }, // Mengubah password dan role
-    'dokter': { password: '123', role: 'dokter', doctorId: 'D001', name: 'Dr. Budi' }, // Mengubah password dan role
-    'dokter': { password: '123', role: 'dokter', doctorId: 'D002', name: 'Dr. Siti' }, // Mengubah password dan role
-    'pasien1': { password: '123', role: 'patient', name: 'Budi Santoso', email: 'budi@example.com' } // Mengubah password dan role
+    'admin': { password: 'pass', role: 'admin' }, // Mengubah password dan role
+    'dokterbudi': { password: 'pass', role: 'doctor', doctorId: 'D001', name: 'Dr. Budi' }, // Mengubah password dan role
+    'doktersiti': { password: 'pass', role: 'doctor', doctorId: 'D002', name: 'Dr. Siti' }, // Mengubah password dan role
+    'pasien1': { password: 'pass', role: 'patient', name: 'Budi Santoso', email: 'budi@example.com' } // Mengubah password dan role
 };
 
 let patientsData = JSON.parse(localStorage.getItem('patientsData')) || [
@@ -37,8 +37,8 @@ let doctorScheduleQuotaData = JSON.parse(localStorage.getItem('doctorScheduleQuo
 ];
 
 let appointmentsData = JSON.parse(localStorage.getItem('appointmentsData')) || [
-    { id: 'A001', patientUsername: 'pasien', patientName: 'doni tamara', polyclinic: 'Poli Umum', doctorId: 'D001', doctorName: 'Dr. Budi', date: '2025-07-10', time: '09:00', status: 'Dikonfirmasi', queueNumber: null },
-    { id: 'A002', patientUsername: 'pasien', patientName: 'dani aja', polyclinic: 'Poli Gigi', doctorId: 'D002', doctorName: 'Dr. Siti', date: '2025-07-15', time: '14:00', status: 'Pending', queueNumber: null }
+    { id: 'A001', patientUsername: 'pasien1', patientName: 'Budi Santoso', polyclinic: 'Poli Umum', doctorId: 'D001', doctorName: 'Dr. Budi', date: '2025-07-10', time: '09:00', status: 'Dikonfirmasi', queueNumber: null },
+    { id: 'A002', patientUsername: 'pasien1', patientName: 'Budi Santoso', polyclinic: 'Poli Gigi', doctorId: 'D002', doctorName: 'Dr. Siti', date: '2025-07-15', time: '14:00', status: 'Pending', queueNumber: null }
 ];
 
 let currentUser = null; // Menyimpan pengguna yang sedang login
